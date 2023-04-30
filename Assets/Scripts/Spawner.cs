@@ -21,7 +21,7 @@ public class Spawner : MonoBehaviour
     private float currentCooldown = 0f;
     void Start()
     {
-        
+        currentCooldown = cooldown / 2f;
     }
 
     // Update is called once per frame

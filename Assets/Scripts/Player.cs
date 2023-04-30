@@ -16,6 +16,8 @@ public class Player : MonoBehaviour
     public float horizontalSpeed = 3f;
     private float realhorizontalSpeed = 3f;
     public bool timeInverse = false;
+    private bool first = true;
+    [SerializeField] private GameObject inverseEffect;
 
     private Rigidbody2D rigidbody;
 
@@ -45,6 +47,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        inverseEffect.SetActive(timeInverse);
         horizontalSpeed = timeInverse ? -realhorizontalSpeed : realhorizontalSpeed;
         if(toNextDiff <= 0f && toNextDiff >= -2.0f)
         {
@@ -108,27 +111,37 @@ public class Player : MonoBehaviour
             else if(difficulty > 1 && difficulty < 5)
             {
                 toNextDiff = 5f;
-                realhorizontalSpeed += 0.5f;
+                realhorizontalSpeed += 0.25f;
             }
             else if(difficulty == 5)
             {
-                director.ShowText("We just got some lightning warnings. You better immedeatly change height when you see some sparks!", 18f);
+                director.ShowText("We just got some lightning warnings. You better change height when you see some sparks!", 18f);
                 toNextDiff = 5f;
             }
             else if(difficulty > 5 && difficulty < 10)
             {
                 toNextDiff = 5f;
-                realhorizontalSpeed += 0.5f;
+                realhorizontalSpeed += 0.25f;
             }
             else if(difficulty == 10)
             {
-                director.ShowText("One of our other workers just got hit by a strong upwind, be careful and have an eye on whats below you.", 18f);
+                director.ShowText("One of our other workers just got hit by a strong upwind, sp have an eye on whats below you.", 18f);
                 toNextDiff = 5f;
             }
             else if(difficulty > 10 && difficulty < 20)
             {
                 toNextDiff = 5f;
-                realhorizontalSpeed += 0.5f;
+                realhorizontalSpeed += 0.25f;
+            }
+            else if(difficulty == 20)
+            {
+                director.ShowText("Our ground team has meassured temporal waves, if you get hit by one, the exit should be a round shape.", 18f);
+                toNextDiff = 5f;
+            }
+            else if(difficulty > 20)
+            {
+                toNextDiff = 5f;
+                realhorizontalSpeed += 0.25f;
             }
         }
         else
@@ -193,6 +206,11 @@ public class Player : MonoBehaviour
         }
         else if (col.gameObject.tag == "TimeVortex")
         {
+            if(timeInverse && first)
+            {
+                director.ShowText("What do you say? Evil mailboxes? We will have to investigate this, stay careful.", 18f);
+                first = false;
+            }
             timeInverse = !timeInverse;
             Destroy(col.gameObject);
         }

@@ -5,20 +5,25 @@ using TMPro;
 
 public class Director : MonoBehaviour
 {
+    //[SerializeField] private AudioSource audioSource;
+    //[SerializeField] private AudioClip clip;
+    //[SerializeField] private float volume=0.5f;
+
     [SerializeField] private GameObject text;
     [SerializeField] private GameObject textBox;
 
     private float visible = 0f;
     void Start()
     {
-        GetComponent<Renderer>().enabled = false;
-        text.GetComponent<TextMeshPro>().text = "";
-        textBox.GetComponent<Renderer>().enabled = false;
+        transform.localScale = new Vector3(0f, 0f, 0f);
+        text.GetComponent<TextMeshProUGUI>().text = "";
+        textBox.transform.localScale = new Vector3(0f, 0f, 0f);
     }
 
     public void ShowText(string textToShow, float time)
     {
-        text.GetComponent<TextMeshPro>().text = textToShow;
+        //audioSource.PlayOneShot(clip, volume);
+        text.GetComponent<TextMeshProUGUI>().text = textToShow;
         visible = time;
     }
 
@@ -26,15 +31,15 @@ public class Director : MonoBehaviour
     {
         if(visible > 0f)
         {
-            GetComponent<Renderer>().enabled = true;
-            textBox.GetComponent<Renderer>().enabled = true;
+            transform.localScale = new Vector3(1f, 1f, 1f);
+            textBox.transform.localScale = new Vector3(1f, 1f, 1f);
             visible -= Time.deltaTime;
         }
         else
         {
-            GetComponent<Renderer>().enabled = false;
-            text.GetComponent<TextMeshPro>().text = "";
-            textBox.GetComponent<Renderer>().enabled = false;
+            transform.localScale = new Vector3(0f, 0f, 0f);
+            text.GetComponent<TextMeshProUGUI>().text = "";
+            textBox.transform.localScale = new Vector3(0f, 0f, 0f);
         }
     }
 }
