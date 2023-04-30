@@ -27,6 +27,11 @@ public class Director : MonoBehaviour
         visible = time;
     }
 
+    public void End()
+    {
+        visible = -1f;
+    }
+
     void Update()
     {
         if(visible > 0f)

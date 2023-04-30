@@ -10,14 +10,17 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject letterCounter;
     [SerializeField] private GameObject mailBoxCounter;
     [SerializeField] private GameObject closedMailBox;
+    [SerializeField] private GameObject bigClosedMailBox;
     [SerializeField] private GameObject dropLetter;
     [SerializeField] private Director director;
+    [SerializeField] private GameObject pauseOverlay;
     [SerializeField] private float maxXOff;
     public float horizontalSpeed = 3f;
     private float realhorizontalSpeed = 3f;
     public bool timeInverse = false;
     private bool first = true;
     [SerializeField] private GameObject inverseEffect;
+    [SerializeField] private AudioClip menu;
 
     private Rigidbody2D rigidbody;
 
@@ -27,33 +30,55 @@ public class Player : MonoBehaviour
     private bool boostActive = false;
     private bool slowActive = false;
 
-    public int difficulty = -10;
+    public int difficulty = -11;
     private float toNextDiff = 0f;
+
+    private bool paused = false;
+    private AudioSource audioSource;
 
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+        audioSource.clip = menu;
+        audioSource.loop = true;
+        audioSource.Play();
+
+        difficulty = -11;
         if(PlayerPrefs.GetInt("Runs") <= 0)
         {
             PlayerPrefs.SetInt("Runs", 0);
-        }
-        else
-        {
-            difficulty = 0;
-            realhorizontalSpeed = 5f;
-            toNextDiff = 20f;
         }
         rigidbody = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
+        if(Input.GetKeyDown(KeyCode.Escape))
+            paused = !paused;
+        
+        if(paused)
+        {
+            Time.timeScale = 0;
+            pauseOverlay.SetActive(true);
+        }
+        else
+        {
+            Time.timeScale = 1;
+            pauseOverlay.SetActive(false);
+        }
+
         inverseEffect.SetActive(timeInverse);
         horizontalSpeed = timeInverse ? -realhorizontalSpeed : realhorizontalSpeed;
         if(toNextDiff <= 0f && toNextDiff >= -2.0f)
         {
             toNextDiff = -3.0f;
             difficulty += 1;
-            if(difficulty == -9)
+            if(difficulty == -10)
+            {
+                director.ShowText("Press E to skip tutorial. E will also hide dialogues later in game.", 8f);
+                toNextDiff = 6f;
+            }
+            else if(difficulty == -9)
             {
                 director.ShowText("Welcome to your first day at the storm dove squadron!", 8f);
                 toNextDiff = 6f;
@@ -108,37 +133,45 @@ public class Player : MonoBehaviour
             {
                 toNextDiff = 10f;
             }
-            else if(difficulty > 1 && difficulty < 5)
-            {
-                toNextDiff = 5f;
-                realhorizontalSpeed += 0.25f;
-            }
             else if(difficulty == 5)
             {
                 director.ShowText("We just got some lightning warnings. You better change height when you see some sparks!", 18f);
                 toNextDiff = 5f;
-            }
-            else if(difficulty > 5 && difficulty < 10)
-            {
-                toNextDiff = 5f;
-                realhorizontalSpeed += 0.25f;
             }
             else if(difficulty == 10)
             {
                 director.ShowText("One of our other workers just got hit by a strong upwind, sp have an eye on whats below you.", 18f);
                 toNextDiff = 5f;
             }
-            else if(difficulty > 10 && difficulty < 20)
+            else if(difficulty == 16)
             {
+                director.ShowText("The ground team is getting some strange readings, something is coming.", 5f);
+                toNextDiff = 5f;
+                realhorizontalSpeed += 0.25f;
+            }
+            else if(difficulty == 17)
+            {
+                director.ShowText("The strange readings intensify, but our timers are not working.", 5f);
+                toNextDiff = 5f;
+                realhorizontalSpeed += 0.25f;
+            }
+            else if(difficulty == 19)
+            {
+                director.ShowText("After a short analysis it looks like a temporal phenomenom, it could be dangerous.", 5f);
                 toNextDiff = 5f;
                 realhorizontalSpeed += 0.25f;
             }
             else if(difficulty == 20)
             {
-                director.ShowText("Our ground team has meassured temporal waves, if you get hit by one, the exit should be a round shape.", 18f);
+                director.ShowText("The team told me that if you get traped inside a way out would definitely have a round shape.", 18f);
                 toNextDiff = 5f;
             }
-            else if(difficulty > 20)
+            else if(difficulty % 5 == 0)
+            {
+                toNextDiff = 5f;
+                realhorizontalSpeed -= 0.50f;
+            }
+            else
             {
                 toNextDiff = 5f;
                 realhorizontalSpeed += 0.25f;
@@ -175,13 +208,23 @@ public class Player : MonoBehaviour
         {
             slowActive = false;
         }
+        if(Input.GetKey(KeyCode.E))
+        {
+            if(difficulty < 0)
+            {
+                difficulty = 0;
+                toNextDiff = 20f;
+                realhorizontalSpeed = 5f;
+            }
+            director.End();
+        }
         if(transform.position.x <= (slowActive ? -maxXOff : -0.1f)|| (boostActive && transform.position.x < maxXOff))
         {
             rigidbody.velocity = new Vector2(boostActive ? 6.0f: 3.0f, rigidbody.velocity.y);
         }
         else if(transform.position.x >= 0.1f || (slowActive && transform.position.x > -maxXOff))
         {
-            rigidbody.velocity = new Vector2(slowActive ? -6.0f : -3.0f, rigidbody.velocity.y);
+            rigidbody.velocity = new Vector2(slowActive ? -realhorizontalSpeed-6f : -realhorizontalSpeed-3.0f, rigidbody.velocity.y);
         }
         else
         {
@@ -196,11 +239,25 @@ public class Player : MonoBehaviour
             postcards += 1;
             Destroy(col.gameObject);
         }
+        else if(col.gameObject.tag == "LetterBox" && postcards < 10)
+        {
+            postcards += 4;
+            postcards = Mathf.Min(10, postcards);
+            Destroy(col.gameObject);
+        }
         else if(col.gameObject.tag == "MailBox" && postcards > 0)
         {
             postcards -= 1;
             score += 1;
             GameObject closedM = Instantiate(closedMailBox, col.gameObject.transform.position, Quaternion.identity);
+            closedM.GetComponent<Rigidbody2D>().velocity = col.gameObject.GetComponent<Rigidbody2D>().velocity;
+            Destroy(col.gameObject);
+        }
+        else if(col.gameObject.tag == "BigMailBox" && postcards >= 4)
+        {
+            postcards -= 4;
+            score += 5;
+            GameObject closedM = Instantiate(bigClosedMailBox, col.gameObject.transform.position, Quaternion.identity);
             closedM.GetComponent<Rigidbody2D>().velocity = col.gameObject.GetComponent<Rigidbody2D>().velocity;
             Destroy(col.gameObject);
         }

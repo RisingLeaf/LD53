@@ -8,6 +8,8 @@ TagManager:
   - Letter
   - MailBox
   - TimeVortex
+  - BigMailBox
+  - LetterBox
   layers:
   - Default
   - TransparentFX
