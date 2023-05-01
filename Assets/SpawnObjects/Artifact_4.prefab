@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5897166407970134016}
   - component: {fileID: 361073575404409108}
   - component: {fileID: 6624566215844565859}
+  - component: {fileID: 6206736808332340998}
   m_Layer: 0
   m_Name: Artifact_4
   m_TagString: Obstacle
@@ -150,3 +151,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
+  velModifier: 1
+--- !u!114 &6206736808332340998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6137540415214525081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 163d0b5966a44419eade21fd33f7590a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  inverted: 0

@@ -23,7 +23,7 @@ public class WindSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(currentCooldown >= cooldown && player.difficulty >= activeOnDifficulty && !player.timeInverse)
+        if(currentCooldown >= cooldown && player.difficulty >= activeOnDifficulty && !player.timeInverse && !player.bossFight)
         {
             float rnd = Random.Range(0f, 1f);
             if(rnd <= chance)

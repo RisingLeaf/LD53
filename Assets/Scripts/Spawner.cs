@@ -21,13 +21,12 @@ public class Spawner : MonoBehaviour
     private float currentCooldown = 0f;
     void Start()
     {
-        currentCooldown = cooldown / 2f;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(currentCooldown >= cooldown && player.difficulty >= activeOnDifficulty && player.timeInverse == timeInverted)
+        if(currentCooldown >= cooldown && player.difficulty >= activeOnDifficulty && player.timeInverse == timeInverted && !player.bossFight)
         {
             float rnd = Random.Range(0f, 1f);
             if(rnd <= chance)
@@ -37,6 +36,7 @@ public class Spawner : MonoBehaviour
                 spawned.GetComponent<Rigidbody2D>().velocity = new Vector2(-player.horizontalSpeed * velModifier, 0.0f);
                 spawned.GetComponent<LifeTime>().lifeTime = lifeTime;
                 spawned.GetComponent<PlayerDependantUpdate>().player = player;
+                spawned.GetComponent<PlayerDependantUpdate>().velModifier = velModifier;
                 if(spawned.GetComponent<OnlyExistInOneDirection>())
                     spawned.GetComponent<OnlyExistInOneDirection>().player = player;
                 currentCooldown = 0f;
@@ -44,7 +44,7 @@ public class Spawner : MonoBehaviour
         }
         else
         {
-            currentCooldown += Time.deltaTime;
+            currentCooldown += Time.deltaTime + Time.deltaTime * (Mathf.Abs(player.horizontalSpeed) / 10f);
         }
     }
 }

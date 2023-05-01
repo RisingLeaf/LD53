@@ -17,7 +17,8 @@ public class SpawnLifeTime : MonoBehaviour
         lifeTime -= Time.deltaTime;
         if(lifeTime <= 0f)
         {
-            Instantiate(toSpawn, transform.position + offset, Quaternion.identity);
+            GameObject spwnd = Instantiate(toSpawn, transform.position + offset, Quaternion.identity);
+            spwnd.transform.parent = transform.parent;
             Destroy(gameObject);
         }
     }

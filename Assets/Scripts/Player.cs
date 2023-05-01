@@ -21,6 +21,16 @@ public class Player : MonoBehaviour
     private bool first = true;
     [SerializeField] private GameObject inverseEffect;
     [SerializeField] private AudioClip menu;
+    [SerializeField] private GameObject letterCollect;
+    [SerializeField] private GameObject letterDeliver;
+    [SerializeField] private GameObject aura;
+    [SerializeField] private float auraCooldown = 5f;
+
+    [SerializeField] private GameObject boss;
+    public bool bossFight = false;
+
+    private float currentAuraCooldown = 0f;
+    private bool hasAura = false;
 
     private Rigidbody2D rigidbody;
 
@@ -32,9 +42,22 @@ public class Player : MonoBehaviour
 
     public int difficulty = -11;
     private float toNextDiff = 0f;
+    private int difficultyCap = 4;
+    private int level;
+    private int goal;
 
     private bool paused = false;
     private AudioSource audioSource;
+
+    private float speed = 1f;
+
+    private GameObject bossspwnd;
+
+    public void SetSpeed(float value)
+    {
+        speed = Mathf.Min(Mathf.Max(value, 0.25f), 2f);
+        PlayerPrefs.SetFloat("speed", speed);
+    }
 
     void Start()
     {
@@ -43,16 +66,68 @@ public class Player : MonoBehaviour
         audioSource.loop = true;
         audioSource.Play();
 
-        difficulty = -11;
-        if(PlayerPrefs.GetInt("Runs") <= 0)
+        level = PlayerPrefs.GetInt("level");
+        if(level < 0)
         {
-            PlayerPrefs.SetInt("Runs", 0);
+            PlayerPrefs.SetInt("level", 0);
+            level = 0;
+        }
+        if(level == 0)
+        {
+            difficulty = -12;
+            difficultyCap = 4;
+            goal = 5;
+        }
+        else if(level == 1)
+        {
+            difficulty = 0;
+            difficultyCap = 9;
+            goal = 10;
+            realhorizontalSpeed = 5f;
+        }
+        else if(level == 2)
+        {
+            difficulty = 5;
+            difficultyCap = 15;
+            goal = 15;
+            realhorizontalSpeed = 6f;
+        }
+        else if(level == 3)
+        {
+            difficulty = 10;
+            difficultyCap = 29;
+            goal = 15;
+            realhorizontalSpeed = 8f;
+        }
+        else if(level == 4)
+        {
+            difficulty = 20;
+            difficultyCap = 35;
+            goal = 30;
+            realhorizontalSpeed = 10f;
+        }
+        else if(level == 5)
+        {
+            difficulty = 39;
+            difficultyCap = 58;
+            goal = -1;
+            realhorizontalSpeed = 10f;
+        }
+        else
+        {
+            difficulty = 40;
+            goal = -1;
+            difficultyCap = -1;
+            realhorizontalSpeed = 8f;
+            hasAura = true;
         }
         rigidbody = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
+        currentAuraCooldown -= Time.deltaTime;
+
         if(Input.GetKeyDown(KeyCode.Escape))
             paused = !paused;
         
@@ -67,13 +142,23 @@ public class Player : MonoBehaviour
             pauseOverlay.SetActive(false);
         }
 
+        if(score >= goal && goal > 0)
+        {
+            Finish();
+        }
+
         inverseEffect.SetActive(timeInverse);
-        horizontalSpeed = timeInverse ? -realhorizontalSpeed : realhorizontalSpeed;
-        if(toNextDiff <= 0f && toNextDiff >= -2.0f)
+        horizontalSpeed = (timeInverse ? -realhorizontalSpeed : realhorizontalSpeed) * speed;
+        if(toNextDiff <= 0f && toNextDiff >= -2.0f && (difficulty < difficultyCap || difficultyCap < 0))
         {
             toNextDiff = -3.0f;
             difficulty += 1;
-            if(difficulty == -10)
+            if(difficulty == -11)
+            {
+                director.ShowText("Press Escape to pause the game or adjust the speed of the game.", 8f);
+                toNextDiff = 6f;
+            }
+            else if(difficulty == -10)
             {
                 director.ShowText("Press E to skip tutorial. E will also hide dialogues later in game.", 8f);
                 toNextDiff = 6f;
@@ -125,12 +210,14 @@ public class Player : MonoBehaviour
             }
             else if(difficulty == 0)
             {
-                director.ShowText("The storm is going to get stronger so be careful out there.", 18f);
+                director.ShowText("You first mission is to deliver five letters to their mailbox.", 18f);
                 toNextDiff = 20f;
                 realhorizontalSpeed = 5f;
             }
             else if(difficulty == 1)
             {
+                if (level == 1)
+                    director.ShowText("This time we will send you further into the storm, deliver 10 letters.", 18f);
                 toNextDiff = 10f;
             }
             else if(difficulty == 5)
@@ -138,9 +225,19 @@ public class Player : MonoBehaviour
                 director.ShowText("We just got some lightning warnings. You better change height when you see some sparks!", 18f);
                 toNextDiff = 5f;
             }
+            else if(difficulty == 6 && level == 2)
+            {
+                director.ShowText("You are getting familiar with this job, deliver 15 more letters!", 18f);
+                toNextDiff = 5f;
+            }
             else if(difficulty == 10)
             {
-                director.ShowText("One of our other workers just got hit by a strong upwind, sp have an eye on whats below you.", 18f);
+                director.ShowText("One of our other workers just got hit by a strong upwind, so have an eye on whats below you.", 18f);
+                toNextDiff = 5f;
+            }
+            else if(difficulty == 11 && level == 3)
+            {
+                director.ShowText("With all this experience, we send you deeper, deliver another 15 letters.", 18f);
                 toNextDiff = 5f;
             }
             else if(difficulty == 16)
@@ -163,8 +260,61 @@ public class Player : MonoBehaviour
             }
             else if(difficulty == 20)
             {
-                director.ShowText("The team told me that if you get traped inside a way out would definitely have a round shape.", 18f);
+                director.ShowText("The team told me that if you get trapped inside a way out would definitely have a round shape.", 18f);
                 toNextDiff = 5f;
+            }
+            else if(difficulty == 21 && level == 4)
+            {
+                director.ShowText("You are a natural at this job, deliver 30 letters, in this stronger region of the storm.", 18f);
+                toNextDiff = 5f;
+            }
+            else if(difficulty == 30)
+            {
+                director.ShowText("The storm is now strong enough to lift up the big stuff, meaning more risk but more reward.", 18f);
+                toNextDiff = 5f;
+            }
+            else if(difficulty == 31)
+            {
+                director.ShowText("Your mission today is to scout around the center of the storm, wait for further instructions", 18f);
+                toNextDiff = 5f;
+            }
+            else if(difficulty == 40)
+            {
+                director.ShowText("Predator birds have been sighted, remember they are really fast.", 18f);
+                toNextDiff = 5f;
+            }
+            else if(difficulty == 41 && level > 5)
+            {
+                director.ShowText("All missions have been completed, just try to deliver a lot of letters now.", 18f);
+                toNextDiff = 5f;
+            }
+            else if(difficulty == 42 && level > 5)
+            {
+                director.ShowText("Based on the results of our research we gave you a shield against time waves.", 18f);
+                toNextDiff = 5f;
+            }
+            else if(difficulty == 43 && level > 5)
+            {
+                director.ShowText("Activate it with Q, it takes half a second to boot up and holds for 3 seconds.", 18f);
+                toNextDiff = 5f;
+            }
+            else if(difficulty == 45 && level == 5)
+            {
+                director.ShowText("The origin of the storm is closing to you, keep close so we can act countermeassures.", 18f);
+                bossspwnd = Instantiate(boss, new Vector3(12f, 12f, 0f), Quaternion.identity);
+                bossspwnd.GetComponent<Boss>().player = gameObject;
+                bossFight = true;
+                toNextDiff = 5f;
+            }
+            else if(difficulty == 55 && level == 5)
+            {
+                Destroy(bossspwnd);
+                director.ShowText("Nice work, we were able to elimate it with a long range attack.", 18f);
+                toNextDiff = 5f;
+            }
+            else if(difficulty == 56 && level == 5)
+            {
+                Finish();
             }
             else if(difficulty % 5 == 0)
             {
@@ -218,13 +368,22 @@ public class Player : MonoBehaviour
             }
             director.End();
         }
+        if(Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.RightShift))
+        {
+            if(currentAuraCooldown < 0f && hasAura)
+            {
+                GameObject spwnd = Instantiate(aura, transform.position, Quaternion.identity);
+                spwnd.transform.parent = transform;
+                currentAuraCooldown = auraCooldown;
+            }
+        }
         if(transform.position.x <= (slowActive ? -maxXOff : -0.1f)|| (boostActive && transform.position.x < maxXOff))
         {
-            rigidbody.velocity = new Vector2(boostActive ? 6.0f: 3.0f, rigidbody.velocity.y);
+            rigidbody.velocity = new Vector2(boostActive ? 6.0f : 3.0f, rigidbody.velocity.y);
         }
         else if(transform.position.x >= 0.1f || (slowActive && transform.position.x > -maxXOff))
         {
-            rigidbody.velocity = new Vector2(slowActive ? -realhorizontalSpeed-6f : -realhorizontalSpeed-3.0f, rigidbody.velocity.y);
+            rigidbody.velocity = new Vector2(-Mathf.Abs(horizontalSpeed) - (slowActive ? 6f : 3f), rigidbody.velocity.y);
         }
         else
         {
@@ -238,12 +397,16 @@ public class Player : MonoBehaviour
         {
             postcards += 1;
             Destroy(col.gameObject);
+            GameObject letDel = Instantiate(letterCollect, col.gameObject.transform.position, Quaternion.identity);
+            letDel.GetComponent<Rigidbody2D>().velocity = col.gameObject.GetComponent<Rigidbody2D>().velocity;
         }
         else if(col.gameObject.tag == "LetterBox" && postcards < 10)
         {
             postcards += 4;
             postcards = Mathf.Min(10, postcards);
             Destroy(col.gameObject);
+            GameObject letDel = Instantiate(letterCollect, col.gameObject.transform.position, Quaternion.identity);
+            letDel.GetComponent<Rigidbody2D>().velocity = col.gameObject.GetComponent<Rigidbody2D>().velocity;
         }
         else if(col.gameObject.tag == "MailBox" && postcards > 0)
         {
@@ -252,6 +415,8 @@ public class Player : MonoBehaviour
             GameObject closedM = Instantiate(closedMailBox, col.gameObject.transform.position, Quaternion.identity);
             closedM.GetComponent<Rigidbody2D>().velocity = col.gameObject.GetComponent<Rigidbody2D>().velocity;
             Destroy(col.gameObject);
+            GameObject letDel = Instantiate(letterDeliver, col.gameObject.transform.position, Quaternion.identity);
+            letDel.GetComponent<Rigidbody2D>().velocity = col.gameObject.GetComponent<Rigidbody2D>().velocity;
         }
         else if(col.gameObject.tag == "BigMailBox" && postcards >= 4)
         {
@@ -260,6 +425,8 @@ public class Player : MonoBehaviour
             GameObject closedM = Instantiate(bigClosedMailBox, col.gameObject.transform.position, Quaternion.identity);
             closedM.GetComponent<Rigidbody2D>().velocity = col.gameObject.GetComponent<Rigidbody2D>().velocity;
             Destroy(col.gameObject);
+            GameObject letDel = Instantiate(letterDeliver, col.gameObject.transform.position, Quaternion.identity);
+            letDel.GetComponent<Rigidbody2D>().velocity = col.gameObject.GetComponent<Rigidbody2D>().velocity;
         }
         else if (col.gameObject.tag == "TimeVortex")
         {
@@ -275,13 +442,14 @@ public class Player : MonoBehaviour
         {
             if(postcards > 0)
             {
-                Destroy(col.gameObject);
+                if(!col.gameObject.GetComponent<Boss>())
+                    Destroy(col.gameObject);
                 postcards -= 1;
                 GameObject dl = Instantiate(dropLetter, transform.position, Quaternion.identity);
                 dl.GetComponent<Rigidbody2D>().velocity = new Vector2(-horizontalSpeed, 1.0f);
             }
-            else
-                Die();
+            //else
+                //Die();
         }
     }
 
@@ -291,24 +459,31 @@ public class Player : MonoBehaviour
         {
             if(postcards > 0)
             {
-                Destroy(collision.gameObject);
+                if(!collision.gameObject.GetComponent<Boss>())
+                    Destroy(collision.gameObject);
                 postcards -= 1;
                 GameObject dl = Instantiate(dropLetter, transform.position, Quaternion.identity);
                 dl.GetComponent<Rigidbody2D>().velocity = new Vector2(-horizontalSpeed, 1.0f);
             }
-            else
-                Die();
+            //else
+                //Die();
         }
+    }
+
+    public void Finish()
+    {
+        PlayerPrefs.SetInt("level", level + 1);
+        SceneManager.LoadScene(3);
     }
 
     public void Die()
     {
-        if(difficulty >= 0)
+        if(difficulty >= 0 && level >= 5)
         {
-            int run = PlayerPrefs.GetInt("Runs") + 1;
-            PlayerPrefs.SetInt("Score"+run, score);
-            PlayerPrefs.SetInt("Runs", run);
+            PlayerPrefs.SetInt("lastScore", score);
+            if(PlayerPrefs.GetInt("highscore") < score)
+                PlayerPrefs.SetInt("highscore", score);
         }
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene(level <= 5 ? 4 : 2);
     }
 }

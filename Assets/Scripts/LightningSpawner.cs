@@ -23,7 +23,7 @@ public class LightningSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(currentCooldown >= cooldown && player.difficulty >= activeOnDifficulty)
+        if(currentCooldown >= cooldown && player.difficulty >= activeOnDifficulty && !player.bossFight)
         {
             float rnd = Random.Range(0f, 1f);
             if(rnd <= chance)
