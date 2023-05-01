@@ -9,6 +9,13 @@ public class MainMenu : MonoBehaviour
     {
         SceneManager.LoadScene(1);
     }
+    public void Reset()
+    {
+        PlayerPrefs.SetFloat("speed", 1f);
+        PlayerPrefs.SetInt("level", 0);
+        PlayerPrefs.SetInt("lastScore", 0);
+        PlayerPrefs.SetInt("highscore", 0);
+    }
     public void Quit()
     {
         Application.Quit();

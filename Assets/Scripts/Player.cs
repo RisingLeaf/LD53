@@ -448,8 +448,8 @@ public class Player : MonoBehaviour
                 GameObject dl = Instantiate(dropLetter, transform.position, Quaternion.identity);
                 dl.GetComponent<Rigidbody2D>().velocity = new Vector2(-horizontalSpeed, 1.0f);
             }
-            //else
-                //Die();
+            else
+                Die();
         }
     }
 
@@ -465,8 +465,8 @@ public class Player : MonoBehaviour
                 GameObject dl = Instantiate(dropLetter, transform.position, Quaternion.identity);
                 dl.GetComponent<Rigidbody2D>().velocity = new Vector2(-horizontalSpeed, 1.0f);
             }
-            //else
-                //Die();
+            else
+                Die();
         }
     }
 
