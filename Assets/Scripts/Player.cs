@@ -18,7 +18,6 @@ public class Player : MonoBehaviour
     public float horizontalSpeed = 3f;
     private float realhorizontalSpeed = 3f;
     public bool timeInverse = false;
-    private bool first = true;
     [SerializeField] private GameObject inverseEffect;
     [SerializeField] private AudioClip menu;
     [SerializeField] private GameObject letterCollect;
@@ -27,6 +26,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float auraCooldown = 5f;
 
     [SerializeField] private GameObject boss;
+    [SerializeField] private GameObject bossDeath;
     public bool bossFight = false;
 
     private float currentAuraCooldown = 0f;
@@ -67,6 +67,7 @@ public class Player : MonoBehaviour
         audioSource.Play();
 
         level = PlayerPrefs.GetInt("level");
+        level = 5;
         if(level < 0)
         {
             PlayerPrefs.SetInt("level", 0);
@@ -160,7 +161,7 @@ public class Player : MonoBehaviour
             }
             else if(difficulty == -10)
             {
-                director.ShowText("Press E to skip tutorial. E will also hide dialogues later in game.", 8f);
+                director.ShowText("Press E to hide dialogues.", 8f);
                 toNextDiff = 6f;
             }
             else if(difficulty == -9)
@@ -308,6 +309,7 @@ public class Player : MonoBehaviour
             }
             else if(difficulty == 55 && level == 5)
             {
+                Instantiate(bossDeath, bossspwnd.transform.position, Quaternion.identity);
                 Destroy(bossspwnd);
                 director.ShowText("Nice work, we were able to elimate it with a long range attack.", 18f);
                 toNextDiff = 5f;
@@ -332,7 +334,7 @@ public class Player : MonoBehaviour
 
 
         letterCounter.GetComponent<TextMeshProUGUI>().text = postcards.ToString();
-        mailBoxCounter.GetComponent<TextMeshProUGUI>().text = score.ToString();
+        mailBoxCounter.GetComponent<TextMeshProUGUI>().text = score.ToString() + (goal > 0 ? " / " + goal : "");
 
         if(Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
         {
@@ -362,9 +364,7 @@ public class Player : MonoBehaviour
         {
             if(difficulty < 0)
             {
-                difficulty = 0;
-                toNextDiff = 20f;
-                realhorizontalSpeed = 5f;
+                toNextDiff = 0.2f;
             }
             director.End();
         }
@@ -377,13 +377,13 @@ public class Player : MonoBehaviour
                 currentAuraCooldown = auraCooldown;
             }
         }
-        if(transform.position.x <= (slowActive ? -maxXOff : -0.1f)|| (boostActive && transform.position.x < maxXOff))
+        if(boostActive && transform.position.x < maxXOff)
         {
-            rigidbody.velocity = new Vector2(boostActive ? 6.0f : 3.0f, rigidbody.velocity.y);
+            rigidbody.velocity = new Vector2(8.0f, rigidbody.velocity.y);
         }
-        else if(transform.position.x >= 0.1f || (slowActive && transform.position.x > -maxXOff))
+        else if(slowActive && transform.position.x > -maxXOff)
         {
-            rigidbody.velocity = new Vector2(-Mathf.Abs(horizontalSpeed) - (slowActive ? 6f : 3f), rigidbody.velocity.y);
+            rigidbody.velocity = new Vector2(-8.0f, rigidbody.velocity.y);
         }
         else
         {
@@ -430,11 +430,6 @@ public class Player : MonoBehaviour
         }
         else if (col.gameObject.tag == "TimeVortex")
         {
-            if(timeInverse && first)
-            {
-                director.ShowText("What do you say? Evil mailboxes? We will have to investigate this, stay careful.", 18f);
-                first = false;
-            }
             timeInverse = !timeInverse;
             Destroy(col.gameObject);
         }
@@ -451,16 +446,40 @@ public class Player : MonoBehaviour
             else
                 Die();
         }
-    }
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Obstacle")
+        else if (col.gameObject.tag == "BigObstacle")
         {
             if(postcards > 0)
             {
-                if(!collision.gameObject.GetComponent<Boss>())
-                    Destroy(collision.gameObject);
+                Destroy(col.gameObject.GetComponent<Collider2D>());
+                postcards -= 1;
+                GameObject dl = Instantiate(dropLetter, transform.position, Quaternion.identity);
+                dl.GetComponent<Rigidbody2D>().velocity = new Vector2(-horizontalSpeed, 1.0f);
+            }
+            else
+                Die();
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.gameObject.tag == "Obstacle")
+        {
+            if(postcards > 0)
+            {
+                if(!col.gameObject.GetComponent<Boss>())
+                    Destroy(col.gameObject);
+                postcards -= 1;
+                GameObject dl = Instantiate(dropLetter, transform.position, Quaternion.identity);
+                dl.GetComponent<Rigidbody2D>().velocity = new Vector2(-horizontalSpeed, 1.0f);
+            }
+            else
+                Die();
+        }
+        else if (col.gameObject.tag == "BigObstacle")
+        {
+            if(postcards > 0)
+            {
+                Destroy(col.gameObject.GetComponent<Collider2D>());
                 postcards -= 1;
                 GameObject dl = Instantiate(dropLetter, transform.position, Quaternion.identity);
                 dl.GetComponent<Rigidbody2D>().velocity = new Vector2(-horizontalSpeed, 1.0f);
