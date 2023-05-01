@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
     public bool timeInverse = false;
     [SerializeField] private GameObject inverseEffect;
     [SerializeField] private AudioClip menu;
+    [SerializeField] private SoundEffectPlayer effects;
     [SerializeField] private GameObject letterCollect;
     [SerializeField] private GameObject letterDeliver;
     [SerializeField] private GameObject aura;
@@ -28,6 +29,13 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject boss;
     [SerializeField] private GameObject bossDeath;
     public bool bossFight = false;
+
+    [SerializeField] private GameObject birdDead;
+    private bool dead = false;
+    private float deathCountdown = 2f;
+
+    private bool victory = false;
+    private float victoryCountdown = 2f;
 
     private float currentAuraCooldown = 0f;
     private bool hasAura = false;
@@ -67,7 +75,6 @@ public class Player : MonoBehaviour
         audioSource.Play();
 
         level = PlayerPrefs.GetInt("level");
-        level = 5;
         if(level < 0)
         {
             PlayerPrefs.SetInt("level", 0);
@@ -126,7 +133,25 @@ public class Player : MonoBehaviour
     }
 
     void Update()
-    {
+    {   
+        if(victory)
+        {
+            if(victoryCountdown < 0f)
+                SceneManager.LoadScene(3);
+            else
+                victoryCountdown -= Time.deltaTime;
+            
+            return;
+        }
+        else if(dead)
+        {
+            if(deathCountdown <= 0f)
+                SceneManager.LoadScene(level <= 5 ? 4 : 2);
+            else
+                deathCountdown -= Time.deltaTime;
+
+            return;
+        }
         currentAuraCooldown -= Time.deltaTime;
 
         if(Input.GetKeyDown(KeyCode.Escape))
@@ -340,10 +365,12 @@ public class Player : MonoBehaviour
         {
             rigidbody.velocity = new Vector2(rigidbody.velocity.x, (verticalSpeed - Mathf.Min(1.5f, postcards / 6.7f)));
         }
+
         if(Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
         {
             rigidbody.velocity = new Vector2(rigidbody.velocity.x, -(verticalSpeed - Mathf.Min(1.5f, postcards / 6.7f)));
         }
+
         if(Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
             boostActive = true;
@@ -352,6 +379,7 @@ public class Player : MonoBehaviour
         {
             boostActive = false;
         }
+
         if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
             slowActive = true;
@@ -360,6 +388,7 @@ public class Player : MonoBehaviour
         {
             slowActive = false;
         }
+
         if(Input.GetKey(KeyCode.E))
         {
             if(difficulty < 0)
@@ -368,6 +397,7 @@ public class Player : MonoBehaviour
             }
             director.End();
         }
+
         if(Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.RightShift))
         {
             if(currentAuraCooldown < 0f && hasAura)
@@ -377,6 +407,7 @@ public class Player : MonoBehaviour
                 currentAuraCooldown = auraCooldown;
             }
         }
+
         if(boostActive && transform.position.x < maxXOff)
         {
             rigidbody.velocity = new Vector2(8.0f, rigidbody.velocity.y);
@@ -393,6 +424,8 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D col)
     {
+        if(victory)
+            return;
         if(col.gameObject.tag == "Letter" && postcards < 10)
         {
             postcards += 1;
@@ -437,6 +470,7 @@ public class Player : MonoBehaviour
         {
             if(postcards > 0)
             {
+                effects.Collide();
                 if(!col.gameObject.GetComponent<Boss>())
                     Destroy(col.gameObject);
                 postcards -= 1;
@@ -450,6 +484,7 @@ public class Player : MonoBehaviour
         {
             if(postcards > 0)
             {
+                effects.Collide();
                 Destroy(col.gameObject.GetComponent<Collider2D>());
                 postcards -= 1;
                 GameObject dl = Instantiate(dropLetter, transform.position, Quaternion.identity);
@@ -466,6 +501,7 @@ public class Player : MonoBehaviour
         {
             if(postcards > 0)
             {
+                effects.Collide();
                 if(!col.gameObject.GetComponent<Boss>())
                     Destroy(col.gameObject);
                 postcards -= 1;
@@ -479,6 +515,7 @@ public class Player : MonoBehaviour
         {
             if(postcards > 0)
             {
+                effects.Collide();
                 Destroy(col.gameObject.GetComponent<Collider2D>());
                 postcards -= 1;
                 GameObject dl = Instantiate(dropLetter, transform.position, Quaternion.identity);
@@ -491,18 +528,25 @@ public class Player : MonoBehaviour
 
     public void Finish()
     {
+        effects.Victory();
         PlayerPrefs.SetInt("level", level + 1);
-        SceneManager.LoadScene(3);
+        GameObject letDel = Instantiate(letterDeliver, new Vector3(0f, 0f, 0f), Quaternion.identity);
+        letDel.transform.localScale = new Vector3(4f, 4f, 4f);
+        victory = true;
     }
 
     public void Die()
     {
+        effects.Death();
+        dead = true;
         if(difficulty >= 0 && level >= 5)
         {
             PlayerPrefs.SetInt("lastScore", score);
             if(PlayerPrefs.GetInt("highscore") < score)
                 PlayerPrefs.SetInt("highscore", score);
         }
-        SceneManager.LoadScene(level <= 5 ? 4 : 2);
+        transform.localScale = new Vector3(0f, 0f, 0f);
+        GameObject dl = Instantiate(birdDead, transform.position, Quaternion.identity);
+        dl.GetComponent<Rigidbody2D>().velocity = new Vector2(0.0f, 1.0f);
     }
 }
