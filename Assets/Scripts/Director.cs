@@ -13,8 +13,13 @@ public class Director : MonoBehaviour
     [SerializeField] private GameObject textBox;
 
     private float visible = 0f;
+
+    [SerializeField] private AudioClip notification;
+    private AudioSource audioSource;
+
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         transform.localScale = new Vector3(0f, 0f, 0f);
         text.GetComponent<TextMeshProUGUI>().text = "";
         textBox.transform.localScale = new Vector3(0f, 0f, 0f);
@@ -25,6 +30,7 @@ public class Director : MonoBehaviour
         //audioSource.PlayOneShot(clip, volume);
         text.GetComponent<TextMeshProUGUI>().text = textToShow;
         visible = time;
+        audioSource.PlayOneShot(notification, 1.0F);
     }
 
     public void End()

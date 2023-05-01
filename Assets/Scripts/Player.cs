@@ -181,22 +181,22 @@ public class Player : MonoBehaviour
             difficulty += 1;
             if(difficulty == -11)
             {
-                director.ShowText("Press Escape to pause the game or adjust the speed of the game.", 8f);
+                director.ShowText("Press Escape to pause the game or adjust the difficulty.", 8f);
                 toNextDiff = 6f;
             }
             else if(difficulty == -10)
             {
-                director.ShowText("Press E to hide dialogues.", 8f);
+                director.ShowText("Press E to hide dialogue.", 8f);
                 toNextDiff = 6f;
             }
             else if(difficulty == -9)
             {
-                director.ShowText("Welcome to your first day at the storm dove squadron!", 8f);
+                director.ShowText("Welcome to your first day at the Storm Dove squadron!", 8f);
                 toNextDiff = 6f;
             }
             else if(difficulty == -8)
             {
-                director.ShowText("Our squadron is specialized in recovering and delivering mail during the heaviest storms!", 8f);
+                director.ShowText("Our squadron is specialized in recovering and delivering mail during the heaviest of storms!", 8f);
                 toNextDiff = 6f;
             }
             else if(difficulty == -7)
@@ -206,97 +206,97 @@ public class Player : MonoBehaviour
             }
             else if(difficulty == -6)
             {
-                director.ShowText("Now, dont worry on how to do this job I will tell you on the flight!", 8f);
+                director.ShowText("You will learn the different aspects of the job the deeper into the storm we get.", 8f);
                 toNextDiff = 6f;
             }
             else if(difficulty == -5)
             {
-                director.ShowText("Use WASD or the arrow keys to adjust your position in the storm.", 8f);
+                director.ShowText("Use WASD or the arrow keys to adjust your position on the screen.", 8f);
                 toNextDiff = 6f;
             }
             else if(difficulty == -4)
             {
-                director.ShowText("You will have to use this movement when avoiding objects that the storm lifted from the ground.", 18f);
+                director.ShowText("You will have to avoid objects that the storm lifted from the ground.", 18f);
                 toNextDiff = 16f;
             }
             else if(difficulty == -3)
             {
-                director.ShowText("But now to your job, you will collect letters that got caught in the storm...", 18f);
+                director.ShowText("But now to your job. You will collect letters that got caught in the storm...", 18f);
                 toNextDiff = 16f;
             }
             else if(difficulty == -2)
             {
-                director.ShowText("...and deliver them to the mailboxes that got ripped from the ground.", 18f);
+                director.ShowText("...and deliver them to the mailboxes that got ripped from the ground!", 18f);
                 toNextDiff = 16f;
             }
             else if(difficulty == -1)
             {
-                director.ShowText("A letter can work protective against an obstacle but you will loose it afterwards.", 18f);
+                director.ShowText("A letter can be used to protect you from obstacles, but you will lose the letter.", 18f);
                 toNextDiff = 6f;
             }
             else if(difficulty == 0)
             {
-                director.ShowText("You first mission is to deliver five letters to their mailbox.", 18f);
+                director.ShowText("You first mission is to deliver five letters to their mailboxes.", 18f);
                 toNextDiff = 20f;
                 realhorizontalSpeed = 5f;
             }
             else if(difficulty == 1)
             {
                 if (level == 1)
-                    director.ShowText("This time we will send you further into the storm, deliver 10 letters.", 18f);
+                    director.ShowText("This time we will send you further into the storm, and you must deliver 10 letters.", 18f);
                 toNextDiff = 10f;
             }
             else if(difficulty == 5)
             {
-                director.ShowText("We just got some lightning warnings. You better change height when you see some sparks!", 18f);
+                director.ShowText("We've just gotten some lightning warnings. Avoid the sparks, as that is were lightning will appear!", 18f);
                 toNextDiff = 5f;
             }
             else if(difficulty == 6 && level == 2)
             {
-                director.ShowText("You are getting familiar with this job, deliver 15 more letters!", 18f);
+                director.ShowText("You are getting familiar with this job, now you must deliver 15 more letters!", 18f);
                 toNextDiff = 5f;
             }
             else if(difficulty == 10)
             {
-                director.ShowText("One of our other workers just got hit by a strong upwind, so have an eye on whats below you.", 18f);
+                director.ShowText("One of our other workers just got hit by a strong upwind, so keep an eye on whats below you.", 18f);
                 toNextDiff = 5f;
             }
             else if(difficulty == 11 && level == 3)
             {
-                director.ShowText("With all this experience, we send you deeper, deliver another 15 letters.", 18f);
+                director.ShowText("With all your experience, we can send you deeper. Deliver another 15 letters.", 18f);
                 toNextDiff = 5f;
             }
             else if(difficulty == 16)
             {
-                director.ShowText("The ground team is getting some strange readings, something is coming.", 5f);
+                director.ShowText("The ground team is getting some strange readings, something is coming!", 5f);
                 toNextDiff = 5f;
                 realhorizontalSpeed += 0.25f;
             }
             else if(difficulty == 17)
             {
-                director.ShowText("The strange readings intensify, but our timers are not working.", 5f);
+                director.ShowText("The strange readings intensify and our clocks have stopped working.", 5f);
                 toNextDiff = 5f;
                 realhorizontalSpeed += 0.25f;
             }
             else if(difficulty == 19)
             {
-                director.ShowText("After a short analysis it looks like a temporal phenomenom, it could be dangerous.", 5f);
+                director.ShowText("After a short analysis it looks like a temporal phenomenon, it could be dangerous.", 5f);
                 toNextDiff = 5f;
                 realhorizontalSpeed += 0.25f;
             }
             else if(difficulty == 20)
             {
-                director.ShowText("The team told me that if you get trapped inside a way out would definitely have a round shape.", 18f);
+                director.ShowText("The scientists have discovered the exit to the temporal rifts is round in shape.", 18f);
                 toNextDiff = 5f;
             }
             else if(difficulty == 21 && level == 4)
             {
-                director.ShowText("You are a natural at this job, deliver 30 letters, in this stronger region of the storm.", 18f);
+                director.ShowText("You are a natural at this job! Deliver 30 letters in this stronger region of the storm.", 18f);
                 toNextDiff = 5f;
             }
             else if(difficulty == 30)
             {
-                director.ShowText("The storm is now strong enough to lift up the big stuff, meaning more risk but more reward.", 18f);
+                director.ShowText("The storm is now strong enough to lift up the big stuff, be careful!", 18f);
                 toNextDiff = 5f;
             }
             else if(difficulty == 31)
@@ -306,17 +306,17 @@ public class Player : MonoBehaviour
             }
             else if(difficulty == 40)
             {
-                director.ShowText("Predator birds have been sighted, remember they are really fast.", 18f);
+                director.ShowText("Predator birds have been sighted. Stay safe, they are really fast.", 18f);
                 toNextDiff = 5f;
             }
             else if(difficulty == 41 && level > 5)
             {
-                director.ShowText("All missions have been completed, just try to deliver a lot of letters now.", 18f);
+                director.ShowText("All missions have been completed, deliver as many letters as you can.", 18f);
                 toNextDiff = 5f;
             }
             else if(difficulty == 42 && level > 5)
             {
-                director.ShowText("Based on the results of our research we gave you a shield against time waves.", 18f);
+                director.ShowText("Based on the results of our research we fabricated a shield against time waves.", 18f);
                 toNextDiff = 5f;
             }
             else if(difficulty == 43 && level > 5)
@@ -336,7 +336,7 @@ public class Player : MonoBehaviour
             {
                 Instantiate(bossDeath, bossspwnd.transform.position, Quaternion.identity);
                 Destroy(bossspwnd);
-                director.ShowText("Nice work, we were able to elimate it with a long range attack.", 18f);
+                director.ShowText("Nice work, we were able to elimate what ever it was with a long range attack.", 18f);
                 toNextDiff = 5f;
             }
             else if(difficulty == 56 && level == 5)
@@ -432,6 +432,7 @@ public class Player : MonoBehaviour
             Destroy(col.gameObject);
             GameObject letDel = Instantiate(letterCollect, col.gameObject.transform.position, Quaternion.identity);
             letDel.GetComponent<Rigidbody2D>().velocity = col.gameObject.GetComponent<Rigidbody2D>().velocity;
+            effects.Letter();
         }
         else if(col.gameObject.tag == "LetterBox" && postcards < 10)
         {
@@ -440,6 +441,7 @@ public class Player : MonoBehaviour
             Destroy(col.gameObject);
             GameObject letDel = Instantiate(letterCollect, col.gameObject.transform.position, Quaternion.identity);
             letDel.GetComponent<Rigidbody2D>().velocity = col.gameObject.GetComponent<Rigidbody2D>().velocity;
+            effects.Letter();
         }
         else if(col.gameObject.tag == "MailBox" && postcards > 0)
         {
@@ -450,6 +452,7 @@ public class Player : MonoBehaviour
             Destroy(col.gameObject);
             GameObject letDel = Instantiate(letterDeliver, col.gameObject.transform.position, Quaternion.identity);
             letDel.GetComponent<Rigidbody2D>().velocity = col.gameObject.GetComponent<Rigidbody2D>().velocity;
+            effects.MailBox();
         }
         else if(col.gameObject.tag == "BigMailBox" && postcards >= 4)
         {
@@ -460,6 +463,7 @@ public class Player : MonoBehaviour
             Destroy(col.gameObject);
             GameObject letDel = Instantiate(letterDeliver, col.gameObject.transform.position, Quaternion.identity);
             letDel.GetComponent<Rigidbody2D>().velocity = col.gameObject.GetComponent<Rigidbody2D>().velocity;
+            effects.MailBox();
         }
         else if (col.gameObject.tag == "TimeVortex")
         {
