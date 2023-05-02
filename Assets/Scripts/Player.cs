@@ -69,6 +69,7 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        speed = PlayerPrefs.GetFloat("speed");
         audioSource = GetComponent<AudioSource>();
         audioSource.clip = menu;
         audioSource.loop = true;
@@ -154,7 +155,7 @@ public class Player : MonoBehaviour
         }
         currentAuraCooldown -= Time.deltaTime;
 
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if(Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
             paused = !paused;
         
         if(paused)
@@ -181,12 +182,12 @@ public class Player : MonoBehaviour
             difficulty += 1;
             if(difficulty == -11)
             {
-                director.ShowText("Press Escape to pause the game or adjust the difficulty.", 8f);
+                director.ShowText("Press Escape or P to pause the game or adjust the difficulty.", 8f);
                 toNextDiff = 6f;
             }
             else if(difficulty == -10)
             {
-                director.ShowText("Press E to hide dialogue.", 8f);
+                director.ShowText("Press E to hide dialogue. Press R to skip the tutorial.", 8f);
                 toNextDiff = 6f;
             }
             else if(difficulty == -9)
@@ -395,6 +396,13 @@ public class Player : MonoBehaviour
             {
                 toNextDiff = 0.2f;
             }
+            director.End();
+        }
+
+        if(Input.GetKey(KeyCode.R) && difficulty < 0)
+        {
+            difficulty = 0;
+            toNextDiff = 5f;
             director.End();
         }
 

@@ -26,6 +26,7 @@ public class MusicManager : MonoBehaviour
             {
                 musicNormal.StartPlaying();
                 musicRift.StartPlaying();
+                started = true;
             }
             if(player.timeInverse)
             {
